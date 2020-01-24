@@ -71,7 +71,7 @@ Update the README.md with details of changes to the interface, this includes new
 
 * **Kevin Ngo** - *Initial work* - [fkvn](https://github.com/fkvn)
 
-See also the list of [contributors](https://github.com/fkvn/Hiring_process/graphs/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/fkvn/hiring-service-restapi/graphs/contributors) who participated in this project.
 
 ## License
 
