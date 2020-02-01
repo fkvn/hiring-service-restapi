@@ -19,10 +19,10 @@ public class DepartmentDaoImpl implements DepartmentDao {
 	private EntityManager entityManager;
 
 	@Override
-	public Department getDept(int deptId) {
+	public Department getDept(int id) {
 
 		// find a department and return it back by its id
-		return entityManager.find(Department.class, deptId);
+		return entityManager.find(Department.class, id);
 	}
 
 	@Override
@@ -42,10 +42,10 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
 	@Override
 	@Transactional
-	public void remove(Integer deptId) {
+	public void remove(int id) {
 
 		// get a dept from database, then remove it from database
-		Department dept = entityManager.find(Department.class, deptId);
+		Department dept = entityManager.find(Department.class, id);
 		entityManager.createQuery("update User u set u.dept = null where u.dept = :dept")
 				.setParameter("dept", dept).executeUpdate();
 		entityManager.remove(dept);

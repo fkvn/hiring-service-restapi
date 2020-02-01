@@ -39,24 +39,24 @@ public class DepartmentController {
 		return dept.getId();
 	}
 
-	@GetMapping("/{deptId}")
-	public Department getDepartment(@PathVariable Integer deptId) {
+	@GetMapping("/{id}")
+	public Department getDepartment(@PathVariable Integer id) {
 
-		return deptDao.getDept(deptId);
+		return deptDao.getDept(id);
 	}
 
-	@PutMapping("/{deptId}")
+	@PutMapping("/{id}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void updateDepartment(@PathVariable Integer deptId, @RequestBody Department dept) {
+	public void updateDepartment(@PathVariable Integer id, @RequestBody Department dept) {
 
-		dept.setId(deptId);
+		dept.setId(id);
 		dept = deptDao.saveDept(dept);
 	}
 
-	@DeleteMapping("/{deptId}")
+	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteDepartment(@PathVariable Integer deptId) {
+	public void deleteDepartment(@PathVariable Integer id) {
 
-		deptDao.remove(deptId);
+		deptDao.remove(id);
 	}
 }
