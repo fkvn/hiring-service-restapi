@@ -27,27 +27,26 @@ public class User implements Serializable {
 	@GeneratedValue
 	private Integer id;
 
-	@Column(name = "first_name", nullable = false)
+	@Column(name = "first_name")
 	@NotNull(message = "firstName cannot be null")
 	private String firstName;
 	
 	@Column(name = "middle_name")
 	private String middleName;
 	
-	@Column(name = "last_name", nullable = false)
+	@Column(name = "last_name")
 	@NotNull(message = "lastName cannot be null")
 	private String lastName;
 
 	@JsonIgnore
-	@Column(nullable = false)
 	@NotNull(message = "password cannot be null")
 	private String password;
 
-	@Column(nullable = false, unique = true)
-	@NotNull(message = "Username cannot be null")
+	@Column(unique = true)
+	@NotNull(message = "username cannot be null")
 	private String username;
 
-	@Column(unique = true, nullable = false)
+	@Column(unique = true)
 	@NotNull(message = "email cannot be null")
 	private String email;
 
