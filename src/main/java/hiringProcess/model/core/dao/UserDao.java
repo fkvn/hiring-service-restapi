@@ -7,7 +7,7 @@ import hiringProcess.model.core.User;
 
 public interface UserDao {
 
-	User getUser(int id);
+	User getUser(Long id);
 
 	User getUserByUsername(String username);
 
@@ -19,5 +19,5 @@ public interface UserDao {
 
 	User saveUser(User user);
 
-	void removeUser(Integer id);
+	void removeUser(Long id);
 }

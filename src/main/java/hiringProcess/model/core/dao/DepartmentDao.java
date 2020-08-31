@@ -8,7 +8,7 @@ import hiringProcess.model.core.Department;
 public interface DepartmentDao {
 
 	// get a department by id
-	Department getDept(int id);
+	Department getDept(Long id);
 
 	// get all departments
 	List<Department> getDepts();
@@ -17,5 +17,5 @@ public interface DepartmentDao {
 	Department saveDept(Department dept);
 
 	// remove a department
-	void remove(int id);
+	void remove(Long id);
 }

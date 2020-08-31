@@ -33,21 +33,21 @@ public class DepartmentController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Integer addDepartment(@RequestBody Department dept) {
+	public Long addDepartment(@RequestBody Department dept) {
 
 		dept = deptDao.saveDept(dept);
 		return dept.getId();
 	}
 
 	@GetMapping("/{id}")
-	public Department getDepartment(@PathVariable Integer id) {
+	public Department getDepartment(@PathVariable Long id) {
 
 		return deptDao.getDept(id);
 	}
 
 	@PutMapping("/{id}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void updateDepartment(@PathVariable Integer id, @RequestBody Department dept) {
+	public void updateDepartment(@PathVariable Long id, @RequestBody Department dept) {
 
 		dept.setId(id);
 		dept = deptDao.saveDept(dept);
@@ -55,7 +55,7 @@ public class DepartmentController {
 
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteDepartment(@PathVariable Integer id) {
+	public void deleteDepartment(@PathVariable Long id) {
 
 		deptDao.remove(id);
 	}

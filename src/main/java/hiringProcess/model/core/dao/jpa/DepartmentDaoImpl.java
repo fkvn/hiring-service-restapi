@@ -19,7 +19,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 	private EntityManager entityManager;
 
 	@Override
-	public Department getDept(int id) {
+	public Department getDept(Long id) {
 
 		// find a department and return it back by its id
 		return entityManager.find(Department.class, id);
@@ -42,7 +42,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
 	@Override
 	@Transactional
-	public void remove(int id) {
+	public void remove(Long id) {
 
 		// get a dept from database, then remove it from database
 		Department dept = entityManager.find(Department.class, id);

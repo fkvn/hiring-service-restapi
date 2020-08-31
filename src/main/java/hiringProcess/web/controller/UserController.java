@@ -40,7 +40,7 @@ public class UserController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Integer addUser(@RequestBody User user) {
+	public Long addUser(@RequestBody User user) {
 
 		String hashed = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12));
 		user.setPassword(hashed);
@@ -49,7 +49,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public User getUser(@PathVariable Integer id) {
+	public User getUser(@PathVariable Long id) {
 
 		return userDao.getUser(id);
 	}
@@ -57,7 +57,7 @@ public class UserController {
 
 	@PutMapping("/{id}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void updateUser(@PathVariable Integer id, @RequestBody User user) {
+	public void updateUser(@PathVariable Long id, @RequestBody User user) {
 
 		if (userDao.getUser(id) == null)
 			throw new UserNotFoundException();
@@ -72,8 +72,7 @@ public class UserController {
 	@SuppressWarnings("unchecked")
 	@PatchMapping("/{id}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void updateUserFields(@PathVariable Integer id,
-			@RequestBody Map<String, Object> userFields) {
+	public void updateUserFields(@PathVariable Long id, @RequestBody Map<String, Object> userFields) {
 
 		if (userDao.getUser(id) == null)
 			throw new UserNotFoundException();
@@ -119,14 +118,14 @@ public class UserController {
 
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteUser(@PathVariable Integer id) {
+	public void deleteUser(@PathVariable Long id) {
 
 		userDao.removeUser(id);
 	}
 
 	@GetMapping("/search")
 	public List<User> search(@RequestParam(required = false) String queryText) {
-		
+
 		List<User> users = null;
 		if (StringUtils.hasText(queryText)) {
 			users = userDao.searchUsers(queryText);

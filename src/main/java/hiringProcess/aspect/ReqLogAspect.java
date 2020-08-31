@@ -30,7 +30,8 @@ public class ReqLogAspect {
 		} catch (Throwable throwable) {
 			throw throwable;
 		} finally {
-			log.info("{} {} - {}", request.getMethod(), request.getRequestURI(), proceedingJoinPoint.getSignature().getName());
+			log.info("{} {} - {}", request.getMethod(), request.getRequestURI(),
+					proceedingJoinPoint.getSignature().getName());
 		}
 
 		return value;
