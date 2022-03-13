@@ -26,12 +26,11 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public User getUserByUsername(String username) {
 
-		// load the roles collection "eagerly" using a join fetch to avoid a second query.
-		String query =
-				"from User user left join fetch user.roles " + "where lower(username) = :username";
+		String query = "from User where lower(username) = :username";
 
 		List<User> users = entityManager.createQuery(query, User.class)
 				.setParameter("username", username.toLowerCase()).getResultList();
+
 		return users.size() == 0 ? null : users.get(0);
 
 	}
@@ -82,6 +81,27 @@ public class UserDaoImpl implements UserDao {
 
 		User user = entityManager.find(User.class, id);
 		entityManager.remove(user);
+	}
+
+	@Override
+	public boolean isUniqueUsername(String username) {
+
+		String query = "from User where trim(username) = :username";
+
+		boolean isExist = entityManager.createQuery(query, User.class)
+				.setParameter("username", username.trim()).getResultList().size() > 0 ? true : false;
+				
+		return isExist;
+	}
+
+	@Override
+	public boolean isUniqueEmail(String email) {
+		String query = "from User where trim(email) = :email";
+
+		boolean isExist = entityManager.createQuery(query, User.class)
+				.setParameter("username", email.trim()).getResultList().size() > 0 ? true : false;
+				
+		return isExist;
 	}
 
 }

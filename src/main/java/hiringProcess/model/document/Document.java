@@ -16,14 +16,13 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import hiringProcess.model.core.User;
 
 @Entity
 @Table(name = "documents")
-@JsonPropertyOrder({ "id", "name", "creator's id", "updated", "revisions" })
+@JsonPropertyOrder({ "id", "name", "creator", "updated", "revisions" })
 public class Document implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -71,7 +70,7 @@ public class Document implements Serializable {
 
 	public Date updated() {
 
-		return getRevisions().get(getRevisions().size() - 1).getTimestamp();
+		return getRevisions().get(getRevisions().size() - 1).getCreatedDate();
 	}
 
 	public List<Revision> getRevisions() {

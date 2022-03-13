@@ -6,12 +6,12 @@ import hiringProcess.model.core.Department;
 
 
 public interface DepartmentDao {
+	
+	// get all departments
+	List<Department> getDepts();
 
 	// get a department by id
 	Department getDept(Long id);
-
-	// get all departments
-	List<Department> getDepts();
 
 	// save a department for either insert or update
 	Department saveDept(Department dept);

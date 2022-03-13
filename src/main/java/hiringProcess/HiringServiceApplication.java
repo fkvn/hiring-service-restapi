@@ -41,3 +41,4 @@ public class HiringServiceApplication {
 				.apis(RequestHandlerSelectors.basePackage("hiringProcess.web.controller")).build();
 	}
 }
+

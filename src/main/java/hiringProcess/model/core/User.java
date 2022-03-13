@@ -15,12 +15,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import hiringProcess.model.document.Document;
@@ -29,34 +31,40 @@ import hiringProcess.model.search.Evaluation;
 import hiringProcess.model.search.Log;
 import hiringProcess.model.search.RefCheckReport;
 import hiringProcess.model.search.Search;
+import hiringProcess.util.Views;
+
 
 @Entity
 @Table(name = "user")
+@JsonPropertyOrder({"id", "username", "dept", "firstname", "middlename", "lastname", "staff", "admin", "superAdmin"})
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue
+	@JsonView(Views.Public.class)
 	private Long id;
 
 	@Column(name = "first_name")
-	@NotNull(message = "firstName cannot be null")
+	@JsonProperty("firstname")
+	@NotNull(message = "firstname cannot be null")
 	private String firstName;
 
 	@Column(name = "middle_name")
+	@JsonProperty("middlename")
 	private String middleName;
 
 	@Column(name = "last_name")
-	@NotNull(message = "lastName cannot be null")
+	@JsonProperty("lastname")
+	@NotNull(message = "lastname cannot be null")
 	private String lastName;
 
-	@JsonProperty(access = Access.WRITE_ONLY)
-	@NotNull(message = "Password must be Not Null")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
 
-	@Column(unique = true)
-	@NotNull(message = "username cannot be null")
+	@JsonView(Views.Public.class)
+	@NotBlank(message = "username cannot be blank")
 	private String username;
 
 	@Column(unique = true)
@@ -65,31 +73,27 @@ public class User implements Serializable {
 	private String phone;
 
 	@Column(columnDefinition = "boolean default false")
-	private boolean isStaff;
+	private boolean isStaff = false;
 
 	@Column(columnDefinition = "boolean default false")
-	private boolean isAdmin;
+	private boolean isAdmin = false;
 
 	@Column(columnDefinition = "boolean default false")
-	private boolean isSuperAdmin;
+	private boolean isSuperAdmin = false;
 
+	@JsonView(Views.Public.class)
 	@Column(nullable = false)
 	@JsonProperty("active")
 	private boolean enabled = true;
 
 	// Relationships
 
-	@ManyToOne
+	@JsonView(Views.Public.class)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = true)
 	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 	@JsonIdentityReference(alwaysAsId = true)
 	private Department dept;
-
-	@OneToOne
-	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-	@JsonIdentityReference(alwaysAsId = true)
-	@JsonProperty(value = "chairDept")
-	private Department chairDept;
 
 	@ManyToMany
 	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -98,24 +102,36 @@ public class User implements Serializable {
 	
 
 	@OneToMany(mappedBy = "chairSearch", fetch = FetchType.LAZY)
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
 	private List<Search> chairSearches;
 	
 	@OneToMany(mappedBy = "recorder", fetch = FetchType.LAZY)
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
 	private List<Log> logs;
 	
 	@OneToMany(mappedBy = "applicant", fetch = FetchType.LAZY)
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
 	@OrderBy("appliedDate")
 	private List<Application> applications;
 	
 	@OneToMany(mappedBy = "reporter", fetch = FetchType.LAZY)
 	@OrderBy("timestamp")
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
 	private List<RefCheckReport> refCheckReport;
 	
 	@OneToMany(mappedBy = "creator",fetch = FetchType.LAZY)
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
 	private List<Document> createdDocs;
 	
 	
 	@OneToMany(mappedBy = "evaluator",fetch = FetchType.LAZY)
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
 	private List<Evaluation> evaluations;
 
 
@@ -287,18 +303,6 @@ public class User implements Serializable {
 	}
 
 
-	public Department getChairDept() {
-
-		return chairDept;
-	}
-
-
-	public void setChairDept(Department chairDept) {
-
-		this.chairDept = chairDept;
-	}
-
-
 	public Department getDept() {
 
 		return dept;
@@ -333,7 +337,6 @@ public class User implements Serializable {
 
 		this.isAdmin = isAdmin;
 	}
-
 
 	public boolean isStaff() {
 

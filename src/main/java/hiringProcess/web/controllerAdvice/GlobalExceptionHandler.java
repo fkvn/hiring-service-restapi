@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,19 +16,53 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import hiringProcess.exception.JWTverifyTokenException;
 import hiringProcess.exception.UserNotFoundException;
+import hiringProcess.jwt.JWT;
+import hiringProcess.model.core.User;
 import hiringProcess.util.ApiError;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@ControllerAdvice
+@ControllerAdvice(annotations = RestController.class)
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+//public class GlobalExceptionHandler {
+
+	@Autowired
+	private JWT jwt;
+
+	@ModelAttribute("user")
+	public User extractUserFromJWT(
+			@RequestHeader(required = false, name = "Authorization") String token) {
+
+		User user = null;
+		
+		if (token != null) {
+			try {
+				token = token.split(" ")[1];
+				
+				Jws<Claims> jwtClaim = jwt.getClaims(token.trim());
+				
+				user = jwt.getCurrentUser(jwtClaim);
+
+			} catch (Exception ex) {
+				throw new JWTverifyTokenException(ex.getMessage());
+			}
+		}
+		return user;
+	}
 
 	@ExceptionHandler({ TransactionSystemException.class, DataIntegrityViolationException.class })
 	protected ResponseEntity<Object> handleConstraintViolationExceptions(Exception ex,
-			WebRequest request) {
+			WebRequest request, HandlerMethod handlerMethod) {
 
 		ex.printStackTrace();
 
@@ -60,9 +95,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		}
 
 		else if (ex.getClass().equals(DataIntegrityViolationException.class)) {
+			apiError.setError("Duplicate entry");
 			apiError
 					.setMessage(((DataIntegrityViolationException) ex).getRootCause().getLocalizedMessage());
 		}
+
+
 
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}

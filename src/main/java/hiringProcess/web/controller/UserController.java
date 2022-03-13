@@ -2,7 +2,8 @@ package hiringProcess.web.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import javax.validation.Valid;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +22,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
+import hiringProcess.exception.BadRequest;
 import hiringProcess.exception.UserNotFoundException;
 import hiringProcess.model.core.User;
 import hiringProcess.model.core.dao.UserDao;
+import hiringProcess.util.Views;
 
 @RestController
 @RequestMapping("/api/users")
@@ -33,17 +39,40 @@ public class UserController {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public List<User> getUsers() {
-
+	@JsonView(Views.Public.class)
+	public List<User> getUsers(User user) {
+		
+		if (user == null) {
+			System.out.println("no user");
+		}
+		
+		else {
+			System.out.println("user: " + user.getUsername());
+		}
+//		
 		return userDao.getUsers();
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Long addUser(@RequestBody User user) {
-
-		String hashed = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(12));
-		user.setPassword(hashed);
+		
+		if (userDao.isUniqueUsername(user.getUsername())) {
+			throw new BadRequest("Username already exists!");
+		}
+		
+		String password = user.getPassword();
+		if (password == null || password.isEmpty()) {
+			throw new BadRequest("Password can't be null or empty!");
+		}
+		
+		if (user.getEmail() != null && userDao.isUniqueEmail(user.getEmail())) {
+			throw new BadRequest("Email already exists!");
+		}
+		
+		String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+		user.setPassword(hashedPassword);
+		
 		user = userDao.saveUser(user);
 		return user.getId();
 	}
@@ -69,7 +98,6 @@ public class UserController {
 	}
 
 
-	@SuppressWarnings("unchecked")
 	@PatchMapping("/{id}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void updateUserFields(@PathVariable Long id, @RequestBody Map<String, Object> userFields) {
@@ -106,9 +134,6 @@ public class UserController {
 						user.setEnabled(true);
 					else
 						user.setEnabled(false);
-					break;
-				case "roles":
-					user.setRoles((Set<String>) userFields.get(key));
 					break;
 				default:
 			}

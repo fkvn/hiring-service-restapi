@@ -46,8 +46,6 @@ public class DepartmentDaoImpl implements DepartmentDao {
 
 		// get a dept from database, then remove it from database
 		Department dept = entityManager.find(Department.class, id);
-		entityManager.createQuery("update User u set u.dept = null where u.dept = :dept")
-				.setParameter("dept", dept).executeUpdate();
 		entityManager.remove(dept);
 	}
 
